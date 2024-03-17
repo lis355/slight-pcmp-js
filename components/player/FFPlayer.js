@@ -1,37 +1,43 @@
+import { spawn, exec } from "node:child_process";
+import path from "node:path";
+
+import moment from "moment";
+
 import AudioPlayer from "./AudioPlayer.js";
 
-import { spawn, exec } from "child_process";
-
-function getFFPlayPath() {
-	return "C:/Program Files/ffmpeg/bin/ffplay.exe";
+// TODO refactor
+function getFFDirectory() {
+	return "C:/Program Files/ffmpeg/bin";
 }
 
 export default class FFPlayer extends AudioPlayer {
-	play() {
+	play(position = 0) {
 		super.play();
 
-		this.ffPlay(0);
-	}
-
-	pause() {
-		this.ffStop();
-	}
-
-	resume() {
+		this.ffPlay(position);
 	}
 
 	stop() {
 		this.ffStop();
 	}
 
-	ffPlay(startTime) {
+	ffPlay(position) {
 		this.process = spawn(
-			`"${getFFPlayPath()}"`,
+			`"${path.posix.join(getFFDirectory(), "ffplay.exe")} "`,
 			[
 				`"${this.filePath}"`,
+
 				"-nodisp",
+				"-autoexit",
+				"-hide_banner",
+
+				"-loglevel",
+				"8",
+
+				"-stats",
+
 				"-ss",
-				startTime.toString()
+				moment.utc(position.asMilliseconds()).format("HH:mm:ss.SSS")
 			],
 			{
 				shell: true
@@ -39,7 +45,24 @@ export default class FFPlayer extends AudioPlayer {
 		);
 
 		// this.process.stdout.on("data", data => console.log(data.toString()));
-		// this.process.stderr.on("data", data => console.error(data.toString()));
+		this.process.stderr.on("data", data => {
+			for (let line of data.toString().split("\r")) {
+				const parts = line.trim().split(" ");
+				if (parts.length > 1) {
+					const time = Number(parts[0]);
+					if (Number.isFinite(time) &&
+						time > 0) {
+						this.emit("played", moment.duration(time, "seconds"));
+					}
+				}
+			}
+		});
+
+		// this.process.stdin.write("q");
+
+		this.process.on("exit", () => {
+			this.emit("stopped");
+		});
 	}
 
 	ffStop() {

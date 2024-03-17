@@ -7,8 +7,8 @@ export default class Element {
 		this.children.push(child);
 	}
 
-	async render() {
-		for (const child of this.children) child.render();
+	async render(screenBuffer) {
+		for (const child of this.children) await child.render(screenBuffer);
 	}
 
 	handleResize() {

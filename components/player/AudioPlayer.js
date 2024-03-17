@@ -1,10 +1,12 @@
-export default class AudioPlayer {
+import EventEmitter from "node:events";
+
+export default class AudioPlayer extends EventEmitter {
 	constructor(filePath) {
+		super();
+
 		this.filePath = filePath;
 	}
 
-	play() { }
-	pause() { }
-	resume() { }
+	play(position) { }
 	stop() { }
 }

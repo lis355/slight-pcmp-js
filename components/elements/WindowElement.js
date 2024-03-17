@@ -1,19 +1,15 @@
-import terminal from "terminal-kit";
-
 import Element from "./Element.js";
 
-const term = terminal.terminal;
+function renderWindowBorder(screenBuffer, x, y, w, h) {
+	for (let i = 0; i < w; i++) screenBuffer.put({ x: x + i, y }, "═");
+	for (let i = 0; i < h; i++) screenBuffer.put({ x: x + w - 1, y: y + i }, "║");
+	for (let i = 0; i < w; i++) screenBuffer.put({ x: x + i, y: y + h - 1 }, "═");
+	for (let i = 0; i < h; i++) screenBuffer.put({ x, y: y + i }, "║");
 
-function renderWindowBorder(x, y, w, h) {
-	for (let i = 1; i <= w; i++) term.moveTo(x + i, y + 1, "═");
-	for (let i = 1; i <= h; i++) term.moveTo(x + w, y + i, "║");
-	for (let i = 1; i <= w; i++) term.moveTo(x + i, y + h, "═");
-	for (let i = 1; i <= h; i++) term.moveTo(x + 1, y + i, "║");
-
-	term.moveTo(x + 1, y + 1, "╔");
-	term.moveTo(x + w, y + 1, "╗");
-	term.moveTo(x + w, y + h, "╝");
-	term.moveTo(x + 1, y + h, "╚");
+	screenBuffer.put({ x, y }, "╔");
+	screenBuffer.put({ x: x + w - 1, y }, "╗");
+	screenBuffer.put({ x: x + w - 1, y: y + h - 1 }, "╝");
+	screenBuffer.put({ x, y: y + h - 1 }, "╚");
 }
 
 export default class WindowElement extends Element {
@@ -26,10 +22,10 @@ export default class WindowElement extends Element {
 		this.h = h;
 	}
 
-	async render() {
-		renderWindowBorder(this.x, this.y, this.w, this.h);
+	async render(screenBuffer) {
+		renderWindowBorder(screenBuffer, this.x, this.y, this.w, this.h);
 
-		await super.render();
+		await super.render(screenBuffer);
 	}
 
 	handleResize() {

@@ -1,15 +1,8 @@
-import terminal from "terminal-kit";
-
-import chalk from "chalk";
 import Jimp from "jimp";
 
 import Element from "./Element.js";
 
-const term = terminal.terminal;
-
 const ROW_OFFSET = 0;
-
-const PIXEL = "\u2584";
 
 function scale(width, height, originalWidth, originalHeight) {
 	const originalRatio = originalWidth / originalHeight;
@@ -34,9 +27,9 @@ function checkAndGetDimensionValue(value, percentageBase) {
 	throw new Error(`${value} is not a valid dimension value`);
 }
 
-function calculateWidthHeight(imageWidth, imageHeight, inputWidth, inputHeight, preserveAspectRatio) {
-	const terminalColumns = term.width;
-	const terminalRows = term.height - ROW_OFFSET;
+function calculateWidthHeight(screenBuffer, imageWidth, imageHeight, inputWidth, inputHeight, preserveAspectRatio) {
+	const terminalColumns = screenBuffer.width;
+	const terminalRows = screenBuffer.height - ROW_OFFSET;
 
 	let width;
 	let height;
@@ -68,11 +61,11 @@ function calculateWidthHeight(imageWidth, imageHeight, inputWidth, inputHeight, 
 	return { width, height };
 }
 
-async function drawImage(imageBuffer, x0, y0, w, h) {
+async function drawImage(screenBuffer, imageBuffer, x0, y0, w, h) {
 	const image = await Jimp.read(imageBuffer);
 	const { bitmap } = image;
 
-	const { width, height } = calculateWidthHeight(bitmap.width, bitmap.height, w, h, false);
+	const { width, height } = calculateWidthHeight(screenBuffer, bitmap.width, bitmap.height, w, h, false);
 	image.resize(width, height);
 
 	for (let y = 0; y < image.bitmap.height - 1; y += 2) {
@@ -80,9 +73,8 @@ async function drawImage(imageBuffer, x0, y0, w, h) {
 			const { r, g, b, a } = Jimp.intToRGBA(image.getPixelColor(x, y));
 			const { r: r2, g: g2, b: b2 } = Jimp.intToRGBA(image.getPixelColor(x, y + 1));
 
-			const symbol = a === 0 ? chalk.reset(" ") : chalk.bgRgb(r, g, b).rgb(r2, g2, b2)(PIXEL);
-
-			term.moveTo(1 + x0 + x, 1 + y0 + y / 2, symbol);
+			if (a === 0) screenBuffer.put({ x: x0 + x, y: y0 + y / 2 }, " ");
+			else screenBuffer.put({ x: x0 + x, y: y0 + y / 2, attr: { color: { r, g, b, a }, bgColor: { r: r2, g: g2, b: b2 } } }, "▄");
 		}
 	}
 }
@@ -98,9 +90,9 @@ export default class ImageElement extends Element {
 		this.imageBuffer = imageBuffer;
 	}
 
-	async render() {
-		drawImage(this.imageBuffer, this.x, this.y, this.w, this.h);
+	async render(screenBuffer) {
+		await drawImage(screenBuffer, this.imageBuffer, this.x, this.y, this.w, this.h);
 
-		await super.render();
+		await super.render(screenBuffer);
 	}
 }

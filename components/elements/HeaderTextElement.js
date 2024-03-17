@@ -1,8 +1,4 @@
-import terminal from "terminal-kit";
-
 import Element from "./Element.js";
-
-const term = terminal.terminal;
 
 export default class HeaderTextElement extends Element {
 	constructor(x, y, w, text) {
@@ -14,13 +10,13 @@ export default class HeaderTextElement extends Element {
 		this.text = text;
 	}
 
-	async render() {
-		this.renderHeader();
+	async render(screenBuffer) {
+		this.renderHeader(screenBuffer);
 
-		await super.render();
+		await super.render(screenBuffer);
 	}
 
-	renderHeader() {
+	renderHeader(screenBuffer) {
 		let text = this.text;
 		let textLength = text.length;
 
@@ -30,6 +26,6 @@ export default class HeaderTextElement extends Element {
 			textLength = this.text.length;
 		}
 
-		term.moveTo(1 + this.x + Math.ceil((this.w - textLength) / 2), 1 + this.y, this.text);
+		screenBuffer.put({ x: this.x + Math.ceil((this.w - textLength) / 2), y: this.y }, this.text);
 	}
 }
