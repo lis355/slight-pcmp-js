@@ -15,7 +15,10 @@ export default class Track {
 	}
 
 	async load() {
-		this.tags = await NodeID3.Promise.read(this.filePath);
+		const id3tags = await NodeID3.Promise.read(this.filePath);
+
+		this.imageBuffer = id3tags.image && id3tags.image.imageBuffer;
+		this.lyrics = id3tags.unsynchronisedLyrics && id3tags.unsynchronisedLyrics.text;
 
 		let infoStr = "";
 
@@ -44,6 +47,8 @@ export default class Track {
 		});
 
 		this.info = JSON.parse(infoStr);
+
+		this.tags = this.info.format.tags;
 
 		this.duration = moment.duration(Number(this.info.format.duration), "seconds");
 		this.bitrate = Number(this.info.format.bit_rate);

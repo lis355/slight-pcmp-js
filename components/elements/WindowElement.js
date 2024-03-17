@@ -27,10 +27,4 @@ export default class WindowElement extends Element {
 
 		await super.render(screenBuffer);
 	}
-
-	handleResize() {
-		super.handleResize();
-
-		for (const child of this.children) child.handleResize();
-	}
 }

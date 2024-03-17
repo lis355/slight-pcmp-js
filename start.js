@@ -5,10 +5,11 @@ import FFPlayer from "./components/player/FFPlayer.js";
 import Track from "./components/tracks/Track.js";
 
 import BackgroundWindowElement from "./components/elements/BackgroundWindowElement.js";
-import HeaderTextElement from "./components/elements/HeaderTextElement.js";
 import ImageElement from "./components/elements/ImageElement.js";
 import LogoElement from "./components/elements/LogoElement.js";
+import LyricsElement from "./components/elements/LyricsElement.js";
 import RootElement from "./components/elements/RootElement.js";
+import TextElement from "./components/elements/TextElement.js";
 import WindowElement from "./components/elements/WindowElement.js";
 
 const term = terminal.createTerminal({
@@ -56,27 +57,43 @@ p.on("stopped", () => {
 });
 
 const rootElement = new RootElement();
-const backgroundWindowElement = new BackgroundWindowElement();
+const backgroundWindowElement = new BackgroundWindowElement(screenBuffer.width, screenBuffer.height);
 rootElement.addChild(backgroundWindowElement);
 
 const logoElement = new LogoElement();
 backgroundWindowElement.addChild(logoElement);
 
+const lyricsElement = new LyricsElement(t);
+backgroundWindowElement.addChild(lyricsElement);
+
 const coverW = 40;
 const coverH = 18;
-const w2 = new WindowElement(Math.ceil((term.width - coverW) / 2), Math.ceil((term.height - coverH) / 2), coverW, coverH);
-backgroundWindowElement.addChild(w2);
+const coverBorderWindowElement = new WindowElement(
+	1, // Math.ceil((screenBuffer.width - coverW) / 2),
+	Math.ceil((screenBuffer.height - coverH) / 2),
+	coverW,
+	coverH
+);
+backgroundWindowElement.addChild(coverBorderWindowElement);
 
-const cover = new ImageElement(Math.ceil((term.width - coverW) / 2) + 1, Math.ceil((term.height - coverH) / 2) + 1, coverW - 2, coverH - 2, t.tags.image.imageBuffer);
-w2.addChild(cover);
+const cover = new ImageElement(
+	2, // Math.ceil((screenBuffer.width - coverW) / 2) + 1,
+	Math.ceil((screenBuffer.height - coverH) / 2) + 1,
+	coverW - 2,
+	coverH - 2,
+	t.imageBuffer
+);
+coverBorderWindowElement.addChild(cover);
 
-const header1 = new HeaderTextElement(0, 0, term.width, ` ${t.tags.artist} - ${t.tags.title} `);
+const header1 = new TextElement(0, 0, ` ${t.tags.artist} - ${t.tags.title} `, "center");
 backgroundWindowElement.addChild(header1);
 
-const header2 = new HeaderTextElement(0, 1, term.width, t.tags.album);
+const header2 = new TextElement(0, 1, t.tags.album, "center");
 backgroundWindowElement.addChild(header2);
 
 async function render() {
+	screenBuffer.clear();
+
 	await rootElement.render(screenBuffer);
 
 	renderBar(moment.duration("PT0S"), 0);
@@ -84,22 +101,22 @@ async function render() {
 	screenBuffer.draw({ delta: true });
 }
 
-term.on("resize", (width, height) => {
-	rootElement.handleResize();
+// term.on("resize", (width, height) => {
+// 	rootElement.handleResize();
 
-	render();
-});
+// 	render();
+// });
 
 term.grabInput(true);
 
 term.on("key", name => {
 	switch (name) {
-		case "LEFT":
-			cover.x--;
+		case "UP":
+			lyricsElement.offsetY--;
 			render();
 			break;
-		case "RIGHT":
-			cover.x++;
+		case "DOWN":
+			lyricsElement.offsetY++;
 			render();
 			break;
 	}

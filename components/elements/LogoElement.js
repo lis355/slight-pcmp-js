@@ -3,18 +3,21 @@ import fs from "node:fs";
 import figlet from "figlet";
 
 import Element from "./Element.js";
+import renderText from "./tools/renderText.js";
 
 export default class LogoElement extends Element {
 	constructor() {
 		super();
 
-		const name = JSON.parse(fs.readFileSync("./package.json", "utf-8")).name;
+		const { version, name } = JSON.parse(fs.readFileSync("./package.json", "utf-8"));
+
+		this.version = version;
 
 		const data = figlet.textSync(name, { font: "ANSI Shadow" });
 
-		this.lines = data.split("\n");
-		this.w = this.lines[0].length;
-		this.h = this.lines.length;
+		this.textLines = data.split("\n");
+		this.textW = this.textLines[0].length;
+		this.textH = this.textLines.length;
 	}
 
 	async render(screenBuffer) {
@@ -24,11 +27,13 @@ export default class LogoElement extends Element {
 	}
 
 	renderLogo(screenBuffer) {
-		const x = Math.ceil((screenBuffer.width - this.w) / 2);
-		const y = Math.ceil((screenBuffer.height - this.h) / 2);
+		const x = Math.ceil((screenBuffer.width - this.textW) / 2);
+		const y = Math.ceil((screenBuffer.height - this.textH) / 2) - 1;
 
-		this.lines.forEach((line, i) => {
+		this.textLines.forEach((line, i) => {
 			screenBuffer.put({ x, y: y + i }, line);
 		});
+
+		renderText(screenBuffer, x, y + this.textH, `v${this.version}`, "center");
 	}
 }
