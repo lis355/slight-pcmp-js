@@ -28,7 +28,7 @@ const t = new Track(trackFilePath);
 await t.load();
 
 const p = new FFPlayer(trackFilePath);
-p.play(moment.duration("PT0S"));
+// p.play(moment.duration("PT0S"));
 
 function renderBar(time, progress) {
 	// ╣▓▓▓▓▓▓░░░░░░░░╬ 00:00 / 00:10 | 192 KB/s ╠
