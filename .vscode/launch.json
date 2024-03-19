@@ -12,7 +12,10 @@
 				"<node_internals>/**"
 			],
 			"program": "${workspaceFolder}/start.js",
-			"console": "integratedTerminal"
+			"console": "integratedTerminal",
+			"env": {
+				"DEVELOPER_ENVIRONMENT": "true"
+			}
 		}
 	]
 }

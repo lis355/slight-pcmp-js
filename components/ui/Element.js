@@ -4,7 +4,17 @@ export default class Element {
 	}
 
 	addChild(child) {
+		child.renderIndex = this.children.length;
+		child.parentElement = this;
+
 		this.children.push(child);
+	}
+
+	removeChild(child) {
+		this.children.splice(child.renderIndex, 1);
+
+		child.renderIndex = -1;
+		child.parentElement = null;
 	}
 
 	async render(screenBuffer) {

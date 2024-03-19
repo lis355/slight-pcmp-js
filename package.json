@@ -6,7 +6,10 @@
 	"main": "start.js",
 	"dependencies": {
 		"figlet": "^1.7.0",
+		"fs-extra": "^11.2.0",
 		"jimp": "^0.22.12",
+		"lodash": "^4.17.21",
+		"lowdb": "^7.0.1",
 		"moment": "^2.30.1",
 		"node-id3": "^0.2.6",
 		"terminal-kit": "^3.1.1"

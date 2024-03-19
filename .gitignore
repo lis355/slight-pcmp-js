@@ -1,5 +1,7 @@
 yarn.lock
 node_modules/
+
+.applicationData/
 temp/
 
 .env.*
