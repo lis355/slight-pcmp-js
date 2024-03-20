@@ -1,5 +1,6 @@
 import Application from "./Application.js";
 import ApplicationCache from "../cache/ApplicationCache.js";
+import CoversCache from "../cache/CoversCache.js";
 import ApplicationDataManager from "./ApplicationDataManager.js";
 import UIManager from "../ui/UIManager.js";
 
@@ -9,6 +10,7 @@ export default class SlightApplication extends Application {
 
 		this.addComponent(this.applicationDataManager = new ApplicationDataManager());
 		this.addComponent(this.applicationCache = new ApplicationCache());
+		this.addComponent(this.coversCache = new CoversCache());
 		this.addComponent(this.uiManager = new UIManager());
 	}
 

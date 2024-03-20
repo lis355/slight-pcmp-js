@@ -1,14 +1,9 @@
 import { spawn, exec } from "node:child_process";
-import path from "node:path";
 
 import moment from "moment";
 
 import AudioPlayer from "./AudioPlayer.js";
-
-// TODO refactor
-function getFFDirectory() {
-	return "C:/Program Files/ffmpeg/bin";
-}
+import { getFFMpegFFPlayPath } from "./ffmpegPathProvider.js";
 
 export default class FFPlayer extends AudioPlayer {
 	play(position = 0) {
@@ -23,7 +18,7 @@ export default class FFPlayer extends AudioPlayer {
 
 	ffPlay(position) {
 		this.process = spawn(
-			`"${path.posix.join(getFFDirectory(), "ffplay.exe")} "`,
+			`"${getFFMpegFFPlayPath()} "`,
 			[
 				`"${this.filePath}"`,
 

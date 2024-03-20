@@ -9,7 +9,7 @@ import RootElement from "./RootElement.js";
 import TextElement from "./TextElement.js";
 import WindowElement from "./WindowElement.js";
 
-import TrackInfo from "../player/TrackInfo.js";
+import Track from "../player/Track.js";
 
 const term = terminal.createTerminal({ appId: "xterm-truecolor" });
 
@@ -26,6 +26,39 @@ const CELL_SIZE = CELL_SIZES.vscodeIntegratedMinGWWindows;
 export default class UIManager extends ApplicationComponent {
 	async initialize() {
 		await super.initialize();
+
+		// const trackFilePath = "C:/Users/LIS355/YandexDisk/MUSIC/ARTISTS/Linkin Park/Minutes To Midnight/05. Linkin Park - Minutes To Midnight (2007) - Shadow Of The Day.mp3";
+
+		// const t = new Track(trackFilePath);
+		// await t.initialize();
+
+		// const p = new FFPlayer(trackFilePath);
+		// // p.play(moment.duration("PT0S"));
+
+		// function renderBar(time, progress) {
+		// 	// ╣▓▓▓▓▓▓░░░░░░░░╬ 00:00 / 00:10 | 192 KB/s ╠
+
+		// 	const statusStr = `${moment.utc(time.asMilliseconds()).format("mm:ss")} / ${moment.utc(t.duration.asMilliseconds()).format("mm:ss")} ║ ${Math.floor(t.info.format.bit_rate / 1000)} KB/s`;
+
+		// 	const barLength = screenBuffer.width - 7 - statusStr.length;
+		// 	const progressInUnit = Math.floor(barLength * progress);
+		// 	const barStr = "▓".repeat(progressInUnit) + "░".repeat(barLength - progressInUnit);
+
+		// 	screenBuffer.put({ x: 1, y: screenBuffer.height - 1 }, `╣${barStr}║ ${statusStr} ╠`);
+		// }
+
+		// p.on("played", time => {
+		// 	const progress = Math.min(1, time.asSeconds() / t.duration.asSeconds());
+		// 	renderBar(time, progress);
+
+		// 	screenBuffer.draw({ delta: true });
+		// });
+
+		// p.on("stopped", () => {
+		// 	renderBar(t.duration, 1);
+
+		// 	screenBuffer.draw({ delta: true });
+		// });
 
 		this.mainScreenBuffer = new terminal.ScreenBufferHD({ dst: term });
 
@@ -56,18 +89,18 @@ export default class UIManager extends ApplicationComponent {
 			"C:/Users/LIS355/Desktop/MSC/Ber-Linn/В.П.Н.С/01. Ber-Linn - В.П.Н.С. (2003) - Даша.mp3",
 			"C:/Users/LIS355/Desktop/MSC/Billy Talent/Billy Talent II/01. Billy Talent - Billy Talent II (2006) - Devil In A Midnight Mass.mp3"
 		]) {
-			const t = new TrackInfo(trackFilePath);
-			await t.load();
+			const t = new Track(trackFilePath);
+			await t.initialize();
 
 			const w = 10;
 			const h = Math.floor(CELL_SIZE[0] / CELL_SIZE[1] * w);
 
+			const screenBuffer = await this.application.coversCache.getCoverScreenBufferForTrack(t, w, h);
+
 			const cover = new ImageElement(
 				1 + x,
 				1,
-				w,
-				h,
-				t.imageBuffer
+				screenBuffer
 			);
 			this.backgroundWindowElement.addChild(cover);
 

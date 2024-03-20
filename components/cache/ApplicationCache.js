@@ -1,41 +1,78 @@
-import crypto from "node:crypto";
 import path from "node:path";
 
-import _ from "lodash";
 import { JSONFilePreset } from "lowdb/node";
 import fs from "fs-extra";
 
 import ApplicationComponent from "../app/ApplicationComponent.js";
-
-// What is the fastest node.js hashing algorithm
-// https://medium.com/@chris_72272/what-is-the-fastest-node-js-hashing-algorithm-c15c1a0e164e
-function strHash(str) {
-	return crypto.createHash("sha1").update(str).digest("base64");
-}
+import hash from "../../tools/hash.js";
 
 export default class ApplicationCache extends ApplicationComponent {
 	async initialize() {
 		await super.initialize();
 
-		const cacheDirectory = this.application.applicationDataManager.applicationDataPath(".cache");
-		fs.ensureDirSync(cacheDirectory);
+		this.cacheDirectory = this.application.applicationDataManager.applicationDataPath(".cache");
+		fs.ensureDirSync(this.cacheDirectory);
 
-		this.db = await JSONFilePreset(path.posix.join(cacheDirectory, ".data"), {});
+		this.db = await JSONFilePreset(path.posix.join(this.cacheDirectory, ".data"), {});
 	}
 
-	getCaheForTrack(filePath) {
-		let cache;
-		if (!fs.existsSync(filePath)) return cache;
+	getCacheObjectAbsolutePath(objPath) {
+		return path.posix.join(this.cacheDirectory, objPath);
+	}
 
+	getFileId(filePath) {
 		const stats = fs.statSync(filePath);
 
-		const id = filePath + stats.ctimeMs;
-		const hash = strHash(id);
+		const id = [filePath, stats.size, stats.ctimeMs];
 
-		cache = _.get(this.db.data, `tracks.${hash}`);
-
-		return cache;
+		return id;
 	}
+
+	getFileHash(filePath) {
+		const id = this.getFileId(filePath);
+		const hashStr = hash(id);
+
+		return hashStr;
+	}
+
+	hasCacheFile(filePath) {
+		return fs.existsSync(this.getCacheObjectAbsolutePath(filePath));
+	}
+
+	getCacheFile(filePath) {
+		return fs.readFileSync(this.getCacheObjectAbsolutePath(filePath));
+	}
+
+	setCacheFile(filePath, contents) {
+		return fs.outputFileSync(this.getCacheObjectAbsolutePath(filePath), contents);
+	}
+
+	removeCacheFile(filePath) {
+		return fs.removeSync(this.getCacheObjectAbsolutePath(filePath));
+	}
+
+	// getCaheForTrack(filePath) {
+	// 	let cache;
+	// 	if (!fs.existsSync(filePath)) return cache;
+
+	// 	const hash = fileHash(filePath);
+
+	// 	cache = _.get(this.db.data, `tracks.${hash}`);
+
+	// 	return cache;
+	// }
+
+	// getCahedBufferForCover(track, width, height) {
+	// 	let cache;
+	// 	if (!fs.existsSync(filePath)) return cache;
+
+	// 	const id = fileId(filePath);
+	// 	const hash = strHash(id + width + height);
+
+	// 	cache = _.get(this.db.data, `tracks.${hash}`);
+
+	// 	return cache;
+	// }
 
 	// async setCaheForTrack(filePath) {
 	// 	let cache;

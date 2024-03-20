@@ -10,7 +10,7 @@ export default class TrackInfo {
 		this.filePath = filePath;
 	}
 
-	async load() {
+	async initialize() {
 		const id3tags = await NodeID3.Promise.read(this.filePath);
 
 		this.imageBuffer = id3tags.image && id3tags.image.imageBuffer;
