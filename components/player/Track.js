@@ -1,8 +1,11 @@
 import TrackInfo from "./TrackInfo.js";
 
 export default class Track {
-	constructor(filePath) {
+	constructor(mediaLibrary, filePath, cacheId) {
+		this.mediaLibrary = mediaLibrary;
 		this.filePath = filePath;
+		this.cacheId = cacheId;
+
 		this.info = new TrackInfo(this.filePath);
 	}
 

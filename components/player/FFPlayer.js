@@ -1,11 +1,11 @@
 import { spawn, exec } from "node:child_process";
+import EventEmitter from "node:events";
 
 import moment from "moment";
 
-import AudioPlayer from "./AudioPlayer.js";
 import { getFFMpegFFPlayPath } from "./ffmpegPathProvider.js";
 
-export default class FFPlayer extends AudioPlayer {
+export default class FFPlayer extends EventEmitter {
 	play(position = 0) {
 		super.play();
 

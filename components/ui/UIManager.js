@@ -1,27 +1,28 @@
 import terminal from "terminal-kit";
 
 import ApplicationComponent from "../app/ApplicationComponent.js";
-import BackgroundWindowElement from "./BackgroundWindowElement.js";
-import ImageElement from "./ImageElement.js";
+import FrameBorderElement from "./FrameBorderElement.js";
+// import ImageElement from "./ImageElement.js";
 import LogoElement from "./LogoElement.js";
-import LyricsElement from "./LyricsElement.js";
+// import LyricsElement from "./LyricsElement.js";
 import RootElement from "./RootElement.js";
-import TextElement from "./TextElement.js";
-import WindowElement from "./WindowElement.js";
+import LoadingBarElement from "./LoadingBarElement.js";
+// import TextElement from "./TextElement.js";
+// import WindowElement from "./WindowElement.js";
 
-import Track from "../player/Track.js";
+// import Track from "../player/Track.js";
 
 const term = terminal.createTerminal({ appId: "xterm-truecolor" });
 
 term.clear();
 term.hideCursor();
 
-const CELL_SIZES = {
-	"vscodeIntegratedMinGWWindows": [7, 17],
-	"externalWindows": [8, 16]
-};
+// const CELL_SIZES = {
+// 	"vscodeIntegratedMinGWWindows": [7, 17],
+// 	"externalWindows": [8, 16]
+// };
 
-const CELL_SIZE = CELL_SIZES.vscodeIntegratedMinGWWindows;
+// const CELL_SIZE = CELL_SIZES.vscodeIntegratedMinGWWindows;
 
 export default class UIManager extends ApplicationComponent {
 	async initialize() {
@@ -60,12 +61,16 @@ export default class UIManager extends ApplicationComponent {
 		// 	screenBuffer.draw({ delta: true });
 		// });
 
+		// const trackFilePath = "C:/Users/LIS355/YandexDisk/MUSIC/ARTISTS/Linkin Park/Minutes To Midnight/05. Linkin Park - Minutes To Midnight (2007) - Shadow Of The Day.mp3";
+		// this.applicationCache.getCaheForTrack(trackFilePath);
+
 		this.mainScreenBuffer = new terminal.ScreenBufferHD({ dst: term });
 
 		this.rootElement = new RootElement();
 
-		this.backgroundWindowElement = new BackgroundWindowElement(this.mainScreenBuffer.width, this.mainScreenBuffer.height);
-		this.rootElement.addChild(this.backgroundWindowElement);
+		this.rootElement.addChild(new FrameBorderElement());
+		this.rootElement.addChild(new LogoElement());
+		this.rootElement.addChild(new LoadingBarElement());
 
 		// this.logoElement = new LogoElement();
 		// this.backgroundWindowElement.addChild(this.logoElement);
@@ -83,29 +88,29 @@ export default class UIManager extends ApplicationComponent {
 		// );
 		// backgroundWindowElement.addChild(coverBorderWindowElement);
 
-		let x = 0;
-		for (const trackFilePath of [
-			"C:/Users/LIS355/Desktop/MSC/Benny Benassi/The Biz - Hypnotica/01. Benny Benassi - The Biz - Hypnotica (2003) - Satisfaction (Isak Original).mp3",
-			"C:/Users/LIS355/Desktop/MSC/Ber-Linn/В.П.Н.С/01. Ber-Linn - В.П.Н.С. (2003) - Даша.mp3",
-			"C:/Users/LIS355/Desktop/MSC/Billy Talent/Billy Talent II/01. Billy Talent - Billy Talent II (2006) - Devil In A Midnight Mass.mp3"
-		]) {
-			const t = new Track(trackFilePath);
-			await t.initialize();
+		// let x = 0;
+		// for (const trackFilePath of [
+		// 	"C:/Users/LIS355/Desktop/MSC/Benny Benassi/The Biz - Hypnotica/01. Benny Benassi - The Biz - Hypnotica (2003) - Satisfaction (Isak Original).mp3",
+		// 	"C:/Users/LIS355/Desktop/MSC/Ber-Linn/В.П.Н.С/01. Ber-Linn - В.П.Н.С. (2003) - Даша.mp3",
+		// 	"C:/Users/LIS355/Desktop/MSC/Billy Talent/Billy Talent II/01. Billy Talent - Billy Talent II (2006) - Devil In A Midnight Mass.mp3"
+		// ]) {
+		// 	const t = new Track(trackFilePath);
+		// 	await t.initialize();
 
-			const w = 10;
-			const h = Math.floor(CELL_SIZE[0] / CELL_SIZE[1] * w);
+		// 	const w = 10;
+		// 	const h = Math.floor(CELL_SIZE[0] / CELL_SIZE[1] * w);
 
-			const screenBuffer = await this.application.coversCache.getCoverScreenBufferForTrack(t, w, h);
+		// 	const screenBuffer = await this.application.coversCache.getCoverScreenBufferForTrack(t, w, h);
 
-			const cover = new ImageElement(
-				1 + x,
-				1,
-				screenBuffer
-			);
-			this.backgroundWindowElement.addChild(cover);
+		// 	const cover = new ImageElement(
+		// 		1 + x,
+		// 		1,
+		// 		screenBuffer
+		// 	);
+		// 	this.backgroundWindowElement.addChild(cover);
 
-			x += w + 1;
-		}
+		// 	x += w + 1;
+		// }
 
 		// const header1 = new TextElement(0, 0, ` ${t.tags.artist} - ${t.tags.title} `, "center");
 		// backgroundWindowElement.addChild(header1);
@@ -115,31 +120,43 @@ export default class UIManager extends ApplicationComponent {
 
 		term.on("resize", this.handleTerminalOnResize.bind(this));
 
-		term.grabInput(true);
+		// term.grabInput(true);
 
-		term.on("key", this.handleTerminalOnKey.bind(this));
+		// term.on("key", this.handleTerminalOnKey.bind(this));
 	}
 
 	async run() {
 		await super.run();
 
-		await this.render();
+		this.rootElement.setSize(this.mainScreenBuffer.width, this.mainScreenBuffer.height);
+
+		setInterval(async () => {
+			this.update();
+
+			await this.render();
+		}, 100);
+	}
+
+	update() {
+		this.rootElement.update(this.application.workingTime);
 	}
 
 	async render() {
 		this.mainScreenBuffer.clear();
 
-		await this.rootElement.render(this.mainScreenBuffer);
+		await this.rootElement.render(this.mainScreenBuffer, 0, 0);
 
 		// renderBar(moment.duration("PT0S"), 0);
 
 		this.mainScreenBuffer.draw({ delta: true });
 	}
 
-	handleTerminalOnResize(width, height) {
-		// 	rootElement.handleResize();
+	async handleTerminalOnResize(width, height) {
+		this.rootElement.setSize(width, height);
 
-		// 	render();
+		this.update();
+
+		await this.render();
 	}
 
 	handleTerminalOnKey(name) {

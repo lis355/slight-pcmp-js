@@ -2,8 +2,8 @@ import fs from "node:fs";
 
 import figlet from "figlet";
 
-import Element from "./Element.js";
-import renderText from "./tools/renderText.js";
+import { Element } from "./Element.js";
+import { renderText } from "./tools/renders.js";
 
 export default class LogoElement extends Element {
 	constructor() {
@@ -20,20 +20,25 @@ export default class LogoElement extends Element {
 		this.textH = this.textLines.length;
 	}
 
-	async render(screenBuffer) {
-		this.renderLogo(screenBuffer);
+	get x() { return 0; }
+	get y() { return 0; }
+	get w() { return this.parent.w; }
+	get h() { return this.parent.h; }
 
-		await super.render(screenBuffer);
+	async render(screenBuffer, absoluteX, absoluteY) {
+		this.renderLogo(screenBuffer, absoluteX, absoluteY);
+
+		await super.render(screenBuffer, absoluteX, absoluteY);
 	}
 
-	renderLogo(screenBuffer) {
-		const x = Math.ceil((screenBuffer.width - this.textW) / 2);
-		const y = Math.ceil((screenBuffer.height - this.textH) / 2) - 1;
+	renderLogo(screenBuffer, absoluteX, absoluteY) {
+		const textOffsetX = Math.ceil((screenBuffer.width - this.textW) / 2);
+		const textOffsetY = Math.ceil((screenBuffer.height - this.textH) / 2) - 1;
 
 		this.textLines.forEach((line, i) => {
-			screenBuffer.put({ x, y: y + i }, line);
+			screenBuffer.put({ x: absoluteX + textOffsetX, y: absoluteY + textOffsetY + i }, line);
 		});
 
-		renderText(screenBuffer, x, y + this.textH, `v${this.version}`, "center");
+		renderText(screenBuffer, absoluteX + textOffsetX, absoluteY + textOffsetY + this.textH, `v${this.version}`, "center");
 	}
 }

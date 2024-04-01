@@ -1,12 +1,17 @@
-import EventEmitter from "node:events";
+import ApplicationComponent from "../app/ApplicationComponent.js";
 
-export default class AudioPlayer extends EventEmitter {
+export default class AudioPlayer extends ApplicationComponent {
 	constructor(filePath) {
 		super();
 
 		this.filePath = filePath;
 	}
 
-	play(position) { }
-	stop() { }
+	play(track) {
+		this.emit("startPlay", track);
+	}
+
+	stop() {
+		this.emit("stopPlay");
+	}
 }

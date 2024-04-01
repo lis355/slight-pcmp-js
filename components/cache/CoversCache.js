@@ -3,16 +3,28 @@ import path from "node:path";
 import _ from "lodash";
 import fs from "fs-extra";
 import Jimp from "jimp";
+import moment from "moment";
 import terminal from "terminal-kit";
 
 import ApplicationComponent from "../app/ApplicationComponent.js";
 import hash from "../../tools/hash.js";
 
+const OBSOLETE_COVER_CACHE_FILE_PERIOD_IN_MILLISECONDS = moment.duration("P3D");
+
 export default class CoversCache extends ApplicationComponent {
 	async initialize() {
 		await super.initialize();
 
-		fs.ensureDirSync(this.application.applicationCache.getCacheObjectAbsolutePath("covers"));
+		const coversCacheDirectory = this.application.applicationCache.getCacheObjectAbsolutePath("covers");
+		fs.ensureDirSync(coversCacheDirectory);
+
+		const time = moment().valueOf();
+		fs.readdirSync(coversCacheDirectory)
+			.map(fileName => path.posix.join(coversCacheDirectory, fileName))
+			.forEach(fileName => {
+				const stat = fs.statSync(fileName);
+				if (time - stat.atimeMs > OBSOLETE_COVER_CACHE_FILE_PERIOD_IN_MILLISECONDS) fs.removeSync(fileName);
+			});
 
 		this.cachedScreenBuffers = {};
 	}

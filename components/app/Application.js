@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export default class Application {
 	constructor() {
 		this.components = [];
@@ -11,12 +13,22 @@ export default class Application {
 
 		this.onUncaughtException = defaultErrorHandler;
 		this.onUnhandledRejection = defaultErrorHandler;
+
+		this.startTime = this.time;
 	}
 
 	addComponent(component) {
 		component.application = this;
 
 		this.components.push(component);
+	}
+
+	get time() {
+		return moment().valueOf();
+	}
+
+	get workingTime() {
+		return this.time - this.startTime;
 	}
 
 	async initialize() {
