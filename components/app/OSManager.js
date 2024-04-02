@@ -11,7 +11,7 @@ export default class OSManager extends ApplicationComponent {
 
 					this.drives = stdout.split("\r\r\n")
 						.filter(value => /[A-Za-z]:/.test(value))
-						.map(value => value.trim().toUpperCase());
+						.map(value => value.trim().toUpperCase() + "/");
 
 					return resolve();
 				});

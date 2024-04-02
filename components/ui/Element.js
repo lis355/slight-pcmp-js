@@ -8,6 +8,7 @@ export default class Element {
 		this.manager = null;
 		this.children = [];
 		(this.props.children || []).forEach(child => this.addChild(child));
+		this.visible = this.props.visible === undefined ? true : !!this.props.visible;
 	}
 
 	get x() { throw new Error("Not implemented"); }
@@ -61,13 +62,27 @@ export default class Element {
 		}
 	}
 
-	updateElement(time) {
-		this.update();
+	handleTerminalOnResizeElement() {
+		this.handleTerminalOnResize();
 
-		for (const child of this.children) child.update(time);
+		for (const child of this.children) child.handleTerminalOnResizeElement();
+	}
+
+	handleTerminalOnKeyElement(name) {
+		this.handleTerminalOnKey(name);
+
+		for (const child of this.children) child.handleTerminalOnKeyElement(name);
+	}
+
+	updateElement(time) {
+		this.update(time);
+
+		for (const child of this.children) child.updateElement(time);
 	}
 
 	renderElement(screenBuffer, absoluteX, absoluteY) {
+		if (!this.visible) return;
+
 		this.preChildrenRender(screenBuffer, absoluteX, absoluteY);
 
 		for (const child of this.children) child.renderElement(screenBuffer, absoluteX + this.x, absoluteY + this.y);
@@ -79,6 +94,12 @@ export default class Element {
 	}
 
 	handleUnmounted() {
+	}
+
+	handleTerminalOnResize() {
+	}
+
+	handleTerminalOnKey(name) {
 	}
 
 	update(time) {

@@ -1,10 +1,10 @@
 import figlet from "figlet";
 
 import { renderText } from "./tools/renders.js";
+import BorderElement from "./BorderElement.js";
 import ContainerElement from "./ContainerElement.js";
 import Element from "./Element.js";
-import FrameBorderElement from "./FrameBorderElement.js";
-import FrameMarginElement from "./FrameMarginElement.js";
+import FrameElement from "./FrameElement.js";
 
 export default class LogoElement extends Element {
 	constructor({ name, version, ...props }) {
@@ -22,8 +22,8 @@ export default class LogoElement extends Element {
 	static create({ name, version }) {
 		const element = new ContainerElement({
 			children: [
-				new FrameBorderElement(),
-				new FrameMarginElement({
+				new BorderElement(),
+				new FrameElement({
 					leftMargin: 1,
 					topMargin: 1,
 					rightMargin: 1,

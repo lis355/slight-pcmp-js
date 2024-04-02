@@ -1,10 +1,12 @@
+import * as math from "../../tools/math.js";
 import Element from "./Element.js";
 
 export default class VerticalScrollBarElement extends Element {
-	constructor({ position, ...props } = {}) {
+	constructor({ barPosition, barWidth, ...props } = {}) {
 		super(props);
 
-		this.position = position || 0;
+		this.barPosition = barPosition || 0;
+		this.barWidth = barWidth || 1;
 	}
 
 	get x() { return this.parent.width - 1 - this.width; }
@@ -12,9 +14,22 @@ export default class VerticalScrollBarElement extends Element {
 	get width() { return 1; }
 	get height() { return this.parent.height; }
 
-	render(screenBuffer, absoluteX, absoluteY) {
-		const barOffset = Math.ceil(this.position * (this.height - 1));
+	// barPosition, barWidth in [0,1]
+	setBar(barPosition, barWidth) {
+		this.barPosition = math.clamp01(barPosition);
+		this.barWidth = math.clamp01(barWidth);
+	}
 
-		for (let i = 0; i < this.height; i++) screenBuffer.put({ x: absoluteX + this.x, y: absoluteY + this.y + i }, barOffset === i ? "█" : "┆");
+	render(screenBuffer, absoluteX, absoluteY) {
+		const barPosition = Math.ceil(this.barPosition * (this.height - 1));
+		const barWidth = Math.ceil(this.barWidth * this.height);
+
+		if (barWidth === this.height) {
+			for (let i = 0; i < this.height; i++) screenBuffer.put({ x: absoluteX + this.x, y: absoluteY + this.y + i }, "┆");
+		} else {
+			for (let i = 0; i < barPosition; i++) screenBuffer.put({ x: absoluteX + this.x, y: absoluteY + this.y + i }, "┆");
+			for (let i = barPosition; i < Math.min(this.height, barPosition + barWidth); i++) screenBuffer.put({ x: absoluteX + this.x, y: absoluteY + this.y + i }, "█");
+			for (let i = barPosition + barWidth; i < this.height; i++) screenBuffer.put({ x: absoluteX + this.x, y: absoluteY + this.y + i }, "┆");
+		}
 	}
 }

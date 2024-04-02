@@ -35,8 +35,20 @@ export default class UIManager extends ApplicationComponent {
 		term.on("key", this.handleTerminalOnKey.bind(this));
 	}
 
+	initializeTermAndMainScreenBuffer() {
+		term.hideCursor();
+
+		this.rootElement.sizeProvider = this.mainScreenBuffer = new terminal.ScreenBufferHD({ dst: term });
+	}
+
+	updateAndRender() {
+		this.update();
+
+		this.render();
+	}
+
 	update() {
-		this.rootElement.update(this.application.workingTime);
+		this.rootElement.updateElement(this.application.workingTime);
 	}
 
 	render() {
@@ -47,27 +59,24 @@ export default class UIManager extends ApplicationComponent {
 		this.mainScreenBuffer.draw({ delta: true });
 	}
 
-	updateAndRender() {
-		this.update();
-
-		this.render();
-	}
-
 	handleTerminalOnResize(width, height) {
 		this.initializeTermAndMainScreenBuffer();
+
+		this.rootElement.handleTerminalOnResizeElement();
 
 		this.updateAndRender();
 	}
 
-	initializeTermAndMainScreenBuffer() {
-		term.hideCursor();
-
-		this.rootElement.sizeProvider = this.mainScreenBuffer = new terminal.ScreenBufferHD({ dst: term });
-	}
-
 	handleTerminalOnKey(name) {
-		switch (name) {
-		}
+		const keyInfo = {
+			key: name.toUpperCase().split("_").reverse()[0],
+			ctrl: name.includes("CTRL"),
+			alt: name.includes("ALT")
+		};
+
+		this.rootElement.handleTerminalOnKeyElement(keyInfo);
+
+		this.updateAndRender();
 	}
 
 	setStateElement(stateElement) {
