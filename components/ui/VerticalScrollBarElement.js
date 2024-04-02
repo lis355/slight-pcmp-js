@@ -1,3 +1,4 @@
+import { SCROLL_BAR_CHARS } from "./tools/boxDrawing.js";
 import * as math from "../../tools/math.js";
 import Element from "./Element.js";
 
@@ -25,11 +26,11 @@ export default class VerticalScrollBarElement extends Element {
 		const barWidth = Math.ceil(this.barWidth * this.height);
 
 		if (barWidth === this.height) {
-			for (let i = 0; i < this.height; i++) screenBuffer.put({ x: absoluteX + this.x, y: absoluteY + this.y + i }, "┆");
+			for (let i = 0; i < this.height; i++) screenBuffer.put({ x: absoluteX + this.x, y: absoluteY + this.y + i }, SCROLL_BAR_CHARS.EMPTY);
 		} else {
-			for (let i = 0; i < barPosition; i++) screenBuffer.put({ x: absoluteX + this.x, y: absoluteY + this.y + i }, "┆");
-			for (let i = barPosition; i < Math.min(this.height, barPosition + barWidth); i++) screenBuffer.put({ x: absoluteX + this.x, y: absoluteY + this.y + i }, "█");
-			for (let i = barPosition + barWidth; i < this.height; i++) screenBuffer.put({ x: absoluteX + this.x, y: absoluteY + this.y + i }, "┆");
+			for (let i = 0; i < barPosition; i++) screenBuffer.put({ x: absoluteX + this.x, y: absoluteY + this.y + i }, SCROLL_BAR_CHARS.EMPTY);
+			for (let i = barPosition; i < Math.min(this.height, barPosition + barWidth); i++) screenBuffer.put({ x: absoluteX + this.x, y: absoluteY + this.y + i }, SCROLL_BAR_CHARS.BAR);
+			for (let i = barPosition + barWidth; i < this.height; i++) screenBuffer.put({ x: absoluteX + this.x, y: absoluteY + this.y + i }, SCROLL_BAR_CHARS.EMPTY);
 		}
 	}
 }

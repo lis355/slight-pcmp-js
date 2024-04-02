@@ -7,6 +7,7 @@ import ContainerElement from "./ContainerElement.js";
 import FrameElement from "./FrameElement.js";
 import VerticalScrollBarElement from "./VerticalScrollBarElement.js";
 import TextElement from "./TextElement.js";
+import { getTextInBorder } from "./tools/boxDrawing.js";
 
 const PARENT_DIRECTORY = "..";
 
@@ -58,7 +59,7 @@ export default class DirectorySelectorElement extends ContainerElement {
 		directorySelectorElement.pathElement = pathElement;
 
 		element.__defineSetter__("caption", value => {
-			captionElement.text = `╣ ${value} ╠`;
+			captionElement.text = getTextInBorder(value);
 		});
 
 		element.__defineSetter__("selectDirectoryHandler", value => {
@@ -75,6 +76,8 @@ export default class DirectorySelectorElement extends ContainerElement {
 		this.selectedPath = [];
 
 		this.selectNextPath();
+
+		if (this.baseOptions.length === 1) this.selectNextPath(this.baseOptions[0]);
 	}
 
 	handleTerminalOnResize() {
@@ -116,7 +119,7 @@ export default class DirectorySelectorElement extends ContainerElement {
 		} else {
 			const absolutePath = this.absoluteSelectedPath;
 
-			this.pathElement.text = `╣ ${absolutePath} ╠`;
+			this.pathElement.text = getTextInBorder(absolutePath);
 
 			this.options = fs.readdirSync(absolutePath).filter(fileName => {
 				try {

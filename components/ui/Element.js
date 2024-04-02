@@ -1,5 +1,3 @@
-// https://en.wikipedia.org/wiki/Box-drawing_character
-
 export default class Element {
 	constructor(props = {}) {
 		this.props = props;
