@@ -1,7 +1,10 @@
 import figlet from "figlet";
 
-import Element from "./Element.js";
 import { renderText } from "./tools/renders.js";
+import ContainerElement from "./ContainerElement.js";
+import Element from "./Element.js";
+import FrameBorderElement from "./FrameBorderElement.js";
+import FrameMarginElement from "./FrameMarginElement.js";
 
 export default class LogoElement extends Element {
 	constructor({ name, version, ...props }) {
@@ -16,18 +19,31 @@ export default class LogoElement extends Element {
 		this.textH = this.textLines.length;
 	}
 
+	static create({ name, version }) {
+		const element = new ContainerElement({
+			children: [
+				new FrameBorderElement(),
+				new FrameMarginElement({
+					leftMargin: 1,
+					topMargin: 1,
+					rightMargin: 1,
+					bottomMargin: 1,
+					children: [
+						new LogoElement({ name, version })
+					]
+				})
+			]
+		});
+
+		return element;
+	}
+
 	get x() { return 0; }
 	get y() { return 0; }
 	get w() { return this.parent.w; }
 	get h() { return this.parent.h; }
 
-	async render(screenBuffer, absoluteX, absoluteY) {
-		this.renderLogo(screenBuffer, absoluteX, absoluteY);
-
-		await super.render(screenBuffer, absoluteX, absoluteY);
-	}
-
-	renderLogo(screenBuffer, absoluteX, absoluteY) {
+	render(screenBuffer, absoluteX, absoluteY) {
 		const textOffsetX = Math.ceil((screenBuffer.width - this.textW) / 2);
 		const textOffsetY = Math.ceil((screenBuffer.height - this.textH) / 2) - 1;
 

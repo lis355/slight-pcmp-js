@@ -1,21 +1,18 @@
 import terminal from "terminal-kit";
 
 import ApplicationComponent from "../app/ApplicationComponent.js";
-import ContainerElement from "./ContainerElement.js";
 import DirectorySelectorElement from "./DirectorySelectorElement.js";
-import FrameBorderElement from "./FrameBorderElement.js";
-import FrameMarginElement from "./FrameMarginElement.js";
 import LogoElement from "./LogoElement.js";
 import RootElement from "./RootElement.js";
 
 const term = terminal.createTerminal({ appId: "xterm-truecolor" });
 
-// const CELL_SIZES = {
-// 	"vscodeIntegratedMinGWWindows": [7, 17],
-// 	"externalWindows": [8, 16]
-// }
+term.CELL_SIZES = {
+	"vscodeIntegratedMinGWWindows": [7, 17],
+	"externalWindows": [8, 16]
+};
 
-// const CELL_SIZE = CELL_SIZES.vscodeIntegratedMinGWWindows;
+term.CELL_SIZE = term.CELL_SIZES.vscodeIntegratedMinGWWindows;
 
 export default class UIManager extends ApplicationComponent {
 	async initialize() {
@@ -28,21 +25,7 @@ export default class UIManager extends ApplicationComponent {
 
 		this.stateElement = null;
 
-		this.logoStateElementsTree = new ContainerElement({
-			children: [
-				new FrameBorderElement(),
-				new FrameMarginElement({
-					leftMargin: 1,
-					topMargin: 1,
-					rightMargin: 1,
-					bottomMargin: 1,
-					children: [
-						new LogoElement({ name: this.application.packageInfo.name, version: this.application.packageInfo.version })
-					]
-				})
-			]
-		});
-
+		this.logoStateElementsTree = LogoElement.create(this.application.packageInfo);
 		this.directorySelectorStateElementsTree = DirectorySelectorElement.create();
 
 		term.on("resize", this.handleTerminalOnResize.bind(this));
@@ -100,7 +83,7 @@ export default class UIManager extends ApplicationComponent {
 	}
 
 	renderDirectorySelector(caption, selectDirectoryHandler) {
-		this.directorySelectorStateElementsTree.captionElement.caption = caption;
+		this.directorySelectorStateElementsTree.caption = caption;
 		this.directorySelectorStateElementsTree.selectDirectoryHandler = selectDirectoryHandler;
 
 		this.setStateElement(this.directorySelectorStateElementsTree);

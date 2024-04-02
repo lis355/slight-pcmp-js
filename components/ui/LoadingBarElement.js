@@ -14,10 +14,8 @@ export default class LoadingBarElement extends FramedElement {
 		this.updatesInRender = 5;
 	}
 
-	async update(time) {
+	update(time) {
 		for (let i = 0; i < this.updatesInRender; i++) this.updateBar();
-
-		super.update(time);
 	}
 
 	updateBar() {
@@ -31,12 +29,10 @@ export default class LoadingBarElement extends FramedElement {
 		else if (this.currentIndex === this.w - 1) this.currentDirection = -1;
 	}
 
-	async render(screenBuffer, absoluteX, absoluteY) {
+	render(screenBuffer, absoluteX, absoluteY) {
 		for (let i = 0; i < this.w; i++) {
 			const brightness = Math.floor(this.brightnessBuffer[i] * 255);
 			screenBuffer.put({ x: absoluteX + i, y: absoluteY, attr: { color: { r: brightness, g: brightness, b: brightness } } }, CHAR);
 		}
-
-		await super.render(screenBuffer, absoluteX, absoluteY);
 	}
 }

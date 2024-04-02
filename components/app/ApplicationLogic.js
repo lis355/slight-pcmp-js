@@ -58,7 +58,9 @@ class StartState extends State {
 		// 	await delay(LOGO_TIME_IN_MILLISECONDS - (this.application.time - this.logoStartTime));
 		// }
 
-		await this.application.uiManager.renderLogo();
+		// await this.application.uiManager.renderLogo();
+
+		return this.setState(new SelectMediaLibraryBaseDirectoryState());
 
 		// return this.setState(new RefreshMediaLibraryState());
 	}

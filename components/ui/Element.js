@@ -1,3 +1,5 @@
+// https://en.wikipedia.org/wiki/Box-drawing_character
+
 export default class Element {
 	constructor(props = {}) {
 		this.props = props;
@@ -18,9 +20,21 @@ export default class Element {
 		child.parent = this;
 
 		this.children.push(child);
+
+		if (this.manager) {
+			child.manager = this.manager;
+
+			child.handleMountedElement();
+		}
 	}
 
 	removeChild(child) {
+		if (this.manager) {
+			child.handleUnmountedElement();
+
+			child.manager = null;
+		}
+
 		this.children.splice(child.index, 1);
 
 		child.parent = null;
@@ -30,13 +44,21 @@ export default class Element {
 	handleMountedElement() {
 		this.handleMounted();
 
-		for (const child of this.children) child.handleMountedElement();
+		for (const child of this.children) {
+			child.manager = this.manager;
+
+			child.handleMountedElement();
+		}
 	}
 
 	handleUnmountedElement() {
 		this.handleUnmounted();
 
-		for (const child of this.children) child.handleUnmountedElement();
+		for (const child of this.children) {
+			child.handleUnmountedElement();
+
+			child.manager = null;
+		}
 	}
 
 	updateElement(time) {
