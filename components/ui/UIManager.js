@@ -3,6 +3,7 @@ import terminal from "terminal-kit";
 import ApplicationComponent from "../app/ApplicationComponent.js";
 import DirectorySelectorElement from "./DirectorySelectorElement.js";
 import LogoElement from "./LogoElement.js";
+import PlayerElement from "./PlayerElement.js";
 import RootElement from "./RootElement.js";
 
 const term = terminal.createTerminal({ appId: "xterm-truecolor" });
@@ -27,6 +28,7 @@ export default class UIManager extends ApplicationComponent {
 
 		this.logoStateElementsTree = LogoElement.create(this.application.packageInfo);
 		this.directorySelectorStateElementsTree = DirectorySelectorElement.create();
+		this.playerStateElementsTree = PlayerElement.create();
 
 		term.on("resize", this.handleTerminalOnResize.bind(this));
 
@@ -98,6 +100,7 @@ export default class UIManager extends ApplicationComponent {
 		this.setStateElement(this.directorySelectorStateElementsTree);
 	}
 
-	renderIdle(selectDirectoryHandler) {
+	renderIdle() {
+		this.setStateElement(this.playerStateElementsTree);
 	}
 }

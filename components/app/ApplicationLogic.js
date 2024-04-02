@@ -58,9 +58,9 @@ class StartState extends State {
 		// 	await delay(LOGO_TIME_IN_MILLISECONDS - (this.application.time - this.logoStartTime));
 		// }
 
-		// await this.application.uiManager.renderLogo();
+		// this.application.uiManager.renderLogo();
 
-		return this.setState(new SelectMediaLibraryBaseDirectoryState());
+		return this.setState(new RefreshMediaLibraryState());
 
 		// return this.setState(new RefreshMediaLibraryState());
 	}
@@ -84,13 +84,11 @@ class SelectMediaLibraryBaseDirectoryState extends State {
 
 		await this.application.osManager.loadDrivesList();
 
-		await this.application.uiManager.renderDirectorySelector("Select media library directory...", selectedDirectory => {
+		this.application.uiManager.renderDirectorySelector("Set media library directory", selectedDirectory => {
 			this.application.mediaLibrary.addBaseDirectory(selectedDirectory);
 
 			return this.setState(new RefreshMediaLibraryState());
 		});
-
-		return this.setState(new IdleState());
 	}
 }
 
@@ -98,6 +96,30 @@ class IdleState extends State {
 	async start() {
 		await super.start();
 
-		await this.application.uiManager.renderIdle();
+		// let x = 0;
+		// for (const trackFilePath of [
+		// 	"C:/Users/LIS355/Desktop/MSC/Benny Benassi/The Biz - Hypnotica/01. Benny Benassi - The Biz - Hypnotica (2003) - Satisfaction (Isak Original).mp3",
+		// 	"C:/Users/LIS355/Desktop/MSC/Ber-Linn/В.П.Н.С/01. Ber-Linn - В.П.Н.С. (2003) - Даша.mp3",
+		// 	"C:/Users/LIS355/Desktop/MSC/Billy Talent/Billy Talent II/01. Billy Talent - Billy Talent II (2006) - Devil In A Midnight Mass.mp3"
+		// ]) {
+		// 	const t = new Track(trackFilePath);
+		// 	await t.initialize();
+
+		// 	const w = 10;
+		// 	const h = Math.floor(CELL_SIZE[0] / CELL_SIZE[1] * w);
+
+		// 	const screenBuffer = await this.application.coversCache.getCoverScreenBufferForTrack(t, w, h);
+
+		// 	const cover = new ImageElement(
+		// 		1 + x,
+		// 		1,
+		// 		screenBuffer
+		// 	);
+		// 	this.backgroundWindowElement.addChild(cover);
+
+		// 	x += w + 1;
+		// }
+
+		this.application.uiManager.renderIdle();
 	}
 }

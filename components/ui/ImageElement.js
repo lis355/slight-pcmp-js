@@ -9,9 +9,7 @@ export default class ImageElement extends Element {
 		this.screenBuffer = screenBuffer;
 	}
 
-	async render(screenBuffer) {
+	render(screenBuffer) {
 		this.screenBuffer.draw({ dst: screenBuffer, x: this.x, y: this.y });
-
-		await super.render(screenBuffer);
 	}
 }

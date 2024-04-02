@@ -39,8 +39,8 @@ export const BOX_CHARS = {
 	BOTTOM_LEFT: "╰",
 	HORIZONTAL: "─",
 	VERTICAL: "│",
-	LEFT: "┤",
-	RIGHT: "├",
+	LEFT: "─",
+	RIGHT: "─",
 	TOP: "┴",
 	BOTTOM: "┬",
 	MIDDLE: "┼"

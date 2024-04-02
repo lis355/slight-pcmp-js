@@ -1,4 +1,4 @@
-import path from "node:path";
+// import path from "node:path";
 
 import fs from "fs-extra";
 // import moment from "moment";
@@ -9,14 +9,14 @@ import ApplicationComponent from "../app/ApplicationComponent.js";
 
 // const OBSOLETE_COVER_CACHE_FILE_PERIOD_IN_MILLISECONDS = moment.duration("P3D");
 
-function objectHash(stats) {
-	// return Math.floor(fs.statSync(filePath).atimeMs);
-	return stats.ctime.toString();
-}
+// function objectHash(stats) {
+// 	// return Math.floor(fs.statSync(filePath).atimeMs);
+// 	return stats.ctime.toString();
+// }
 
-function isTrack(filePath) {
-	return path.extname(filePath).toLowerCase() === ".mp3";
-}
+// function isTrack(filePath) {
+// 	return path.extname(filePath).toLowerCase() === ".mp3";
+// }
 
 export default class MediaLibrary extends ApplicationComponent {
 	async initialize() {
@@ -29,6 +29,14 @@ export default class MediaLibrary extends ApplicationComponent {
 		this.mediaLibrary = this.application.applicationCache.get(this.mediaLibraryCachePath, { children: {} });
 	}
 
+	get baseDirectoriesSettingPath() {
+		return "mediaLibrary.baseDirectories";
+	}
+
+	get mediaLibraryCachePath() {
+		return "mediaLibrary";
+	}
+
 	hasBaseDirectories() {
 		return this.baseDirectories.length > 0;
 	}
@@ -39,96 +47,80 @@ export default class MediaLibrary extends ApplicationComponent {
 		this.application.applicationSettings.set(this.baseDirectoriesSettingPath, this.baseDirectories);
 	}
 
-	get baseDirectoriesSettingPath() {
-		return "mediaLibrary.baseDirectories";
-	}
-
-	get mediaLibraryCachePath() {
-		return "mediaLibrary";
-	}
-
 	async refreshLibrary() {
-		let refreshed = false;
-		let touchedDirectoriesAmount = 0;
-		let touchedFilesAmount = 0;
-		let touchedTracksAmount = 0;
-		let changedTracksAmount = 0;
+		// let refreshed = false;
+		// let touchedDirectoriesAmount = 0;
+		// let touchedFilesAmount = 0;
+		// let touchedTracksAmount = 0;
+		// let changedTracksAmount = 0;
 
-		function walkSync(objectPath, objectName, treeNode) {
-			let childTreeNode = treeNode.children[objectName];
-			const stats = fs.statSync(objectPath);
+		// function walkSync(objectPath, objectName, treeNode) {
+		// 	let childTreeNode = treeNode.children[objectName];
+		// 	const stats = fs.statSync(objectPath);
 
-			const isDirectory = stats.isDirectory();
-			let isObjectTrack;
-			if (isDirectory) {
-				touchedDirectoriesAmount++;
-			} else if (stats.isFile()) {
-				touchedFilesAmount++;
+		// 	const isDirectory = stats.isDirectory();
+		// 	let isObjectTrack;
+		// 	if (isDirectory) {
+		// 		touchedDirectoriesAmount++;
+		// 	} else if (stats.isFile()) {
+		// 		touchedFilesAmount++;
 
-				isObjectTrack = isTrack(objectPath);
-				if (isObjectTrack) touchedTracksAmount++;
-			}
+		// 		isObjectTrack = isTrack(objectPath);
+		// 		if (isObjectTrack) touchedTracksAmount++;
+		// 	}
 
-			const currentHash = objectHash(stats);
+		// 	const currentHash = objectHash(stats);
 
-			if (!childTreeNode ||
-				childTreeNode.h !== currentHash) {
-				refreshed = true;
+		// 	if (!childTreeNode ||
+		// 		childTreeNode.h !== currentHash) {
+		// 		refreshed = true;
 
-				if (isDirectory) {
-					if (!childTreeNode) treeNode.children[objectName] = childTreeNode = { children: {} };
-					childTreeNode.h = currentHash;
+		// 		if (isDirectory) {
+		// 			if (!childTreeNode) treeNode.children[objectName] = childTreeNode = { children: {} };
+		// 			childTreeNode.h = currentHash;
 
-					if (!childTreeNode.children) childTreeNode.children = {};
+		// 			if (!childTreeNode.children) childTreeNode.children = {};
 
-					for (const fileName of fs.readdirSync(objectPath)) {
-						const filePath = path.posix.join(objectPath, fileName);
+		// 			for (const fileName of fs.readdirSync(objectPath)) {
+		// 				const filePath = path.posix.join(objectPath, fileName);
 
-						walkSync(filePath, fileName, childTreeNode);
-					}
-				} else {
-					treeNode.children[objectName] = currentHash;
+		// 				walkSync(filePath, fileName, childTreeNode);
+		// 			}
+		// 		} else {
+		// 			treeNode.children[objectName] = currentHash;
 
-					if (isObjectTrack) changedTracksAmount++;
-				}
-			}
-		}
+		// 			if (isObjectTrack) changedTracksAmount++;
+		// 		}
+		// 	}
+		// }
 
-		for (const baseDirectory of this.baseDirectories) {
-			let childTreeNode = this.mediaLibrary.children[baseDirectory];
+		// for (const baseDirectory of this.baseDirectories) {
+		// 	let childTreeNode = this.mediaLibrary.children[baseDirectory];
 
-			const stats = fs.statSync(baseDirectory);
-			const currentHash = objectHash(stats);
+		// 	const stats = fs.statSync(baseDirectory);
+		// 	const currentHash = objectHash(stats);
 
-			if (!childTreeNode ||
-				childTreeNode.h !== currentHash) {
-				refreshed = true;
+		// 	if (!childTreeNode ||
+		// 		childTreeNode.h !== currentHash) {
+		// 		refreshed = true;
 
-				if (!childTreeNode) this.mediaLibrary.children[baseDirectory] = childTreeNode = { children: {} };
-				childTreeNode.h = currentHash;
+		// 		if (!childTreeNode) this.mediaLibrary.children[baseDirectory] = childTreeNode = { children: {} };
+		// 		childTreeNode.h = currentHash;
 
-				for (const fileName of fs.readdirSync(baseDirectory)) {
-					const filePath = path.posix.join(baseDirectory, fileName);
+		// 		for (const fileName of fs.readdirSync(baseDirectory)) {
+		// 			const filePath = path.posix.join(baseDirectory, fileName);
 
-					walkSync(filePath, fileName, childTreeNode);
-				}
-			}
-		}
+		// 			walkSync(filePath, fileName, childTreeNode);
+		// 		}
+		// 	}
+		// }
 
-		// walkSync(this.baseDirectory, filePath => {
-		// 	if (path.extname(filePath) === ".mp3") this.mediaLibrary.tracks[filePath] = new Track(this, filePath, this.getTrackCacheId(filePath));
-		// });
+		// // walkSync(this.baseDirectory, filePath => {
+		// // 	if (path.extname(filePath) === ".mp3") this.mediaLibrary.tracks[filePath] = new Track(this, filePath, this.getTrackCacheId(filePath));
+		// // });
 
-		if (refreshed) this.application.applicationCache.set("mediaLibrary", this.mediaLibrary);
+		// if (refreshed) this.application.applicationCache.set("mediaLibrary", this.mediaLibrary);
 
-		// console.log(`[MediaLibrary]: [refreshLibrary] refreshed: ${refreshed}, touchedDirectoriesAmount: ${touchedDirectoriesAmount}, touchedFilesAmount: ${touchedFilesAmount}, touchedTracksAmount: ${touchedTracksAmount}, changedTracksAmount: ${changedTracksAmount}`);
+		// // console.log(`[MediaLibrary]: [refreshLibrary] refreshed: ${refreshed}, touchedDirectoriesAmount: ${touchedDirectoriesAmount}, touchedFilesAmount: ${touchedFilesAmount}, touchedTracksAmount: ${touchedTracksAmount}, changedTracksAmount: ${changedTracksAmount}`);
 	}
-
-	// getTrackCacheId(filePath) {
-	// 	const stats = fs.statSync(filePath);
-
-	// 	const id = [filePath, stats.size, stats.atimeMs];
-
-	// 	return id;
-	// }
 }
