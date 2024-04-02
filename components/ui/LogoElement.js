@@ -1,15 +1,11 @@
-import fs from "node:fs";
-
 import figlet from "figlet";
 
-import { Element } from "./Element.js";
+import Element from "./Element.js";
 import { renderText } from "./tools/renders.js";
 
 export default class LogoElement extends Element {
-	constructor() {
-		super();
-
-		const { version, name } = JSON.parse(fs.readFileSync("./package.json", "utf-8"));
+	constructor({ name, version, ...props }) {
+		super(props);
 
 		this.version = version;
 

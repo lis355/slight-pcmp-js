@@ -13,6 +13,7 @@
 			],
 			"program": "${workspaceFolder}/start.js",
 			"console": "integratedTerminal",
+			"args": [],
 			"env": {
 				"DEVELOPER_ENVIRONMENT": "true"
 			}

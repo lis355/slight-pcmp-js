@@ -36,4 +36,4 @@ export default class AsyncQueue {
 
 		setImmediate(this.process);
 	}
-};
+}

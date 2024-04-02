@@ -20,4 +20,4 @@ export default class ApplicationDataManager extends ApplicationComponent {
 	applicationDataPath(...nextPaths) {
 		return path.posix.join(this.applicationDataDirectory, ...nextPaths);
 	}
-};
+}

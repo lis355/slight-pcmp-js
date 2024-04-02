@@ -4,8 +4,8 @@ import fs from "fs-extra";
 // import moment from "moment";
 
 import ApplicationComponent from "../app/ApplicationComponent.js";
-import Track from "../player/Track.js";
-import FFPlayer from "../player/FFPlayer.js";
+// import Track from "../player/Track.js";
+// import FFPlayer from "../player/FFPlayer.js";
 
 // const OBSOLETE_COVER_CACHE_FILE_PERIOD_IN_MILLISECONDS = moment.duration("P3D");
 
@@ -22,17 +22,29 @@ export default class MediaLibrary extends ApplicationComponent {
 	async initialize() {
 		await super.initialize();
 
-		this.baseDirectories = this.application.applicationSettings.get("mediaLibrary.baseDirectories", []);
-		this.mediaLibrary = this.application.applicationCache.get("mediaLibrary", { children: {} });
+		this.baseDirectories = this.application.applicationSettings.get(this.baseDirectoriesSettingPath, [])
+			.filter(directory => fs.existsSync(directory) &&
+				fs.statSync(directory).isDirectory());
+
+		this.mediaLibrary = this.application.applicationCache.get(this.mediaLibraryCachePath, { children: {} });
 	}
 
-	async run() {
-		await super.run();
+	hasBaseDirectories() {
+		return this.baseDirectories.length > 0;
+	}
 
-		// const trackFilePath = "C:/Users/LIS355/YandexDisk/MUSIC/ARTISTS/Linkin Park/Minutes To Midnight/05. Linkin Park - Minutes To Midnight (2007) - Shadow Of The Day.mp3";
-		// // const t = new Track(this, trackFilePath);
-		// const player = new FFPlayer(trackFilePath);
-		// player.play();
+	addBaseDirectory(directory) {
+		this.baseDirectories.push(directory);
+
+		this.application.applicationSettings.set(this.baseDirectoriesSettingPath, this.baseDirectories);
+	}
+
+	get baseDirectoriesSettingPath() {
+		return "mediaLibrary.baseDirectories";
+	}
+
+	get mediaLibraryCachePath() {
+		return "mediaLibrary";
 	}
 
 	async refreshLibrary() {
@@ -109,7 +121,7 @@ export default class MediaLibrary extends ApplicationComponent {
 
 		if (refreshed) this.application.applicationCache.set("mediaLibrary", this.mediaLibrary);
 
-		console.log(`[MediaLibrary]: [refreshLibrary] refreshed: ${refreshed}, touchedDirectoriesAmount: ${touchedDirectoriesAmount}, touchedFilesAmount: ${touchedFilesAmount}, touchedTracksAmount: ${touchedTracksAmount}, changedTracksAmount: ${changedTracksAmount}`);
+		// console.log(`[MediaLibrary]: [refreshLibrary] refreshed: ${refreshed}, touchedDirectoriesAmount: ${touchedDirectoriesAmount}, touchedFilesAmount: ${touchedFilesAmount}, touchedTracksAmount: ${touchedTracksAmount}, changedTracksAmount: ${changedTracksAmount}`);
 	}
 
 	// getTrackCacheId(filePath) {

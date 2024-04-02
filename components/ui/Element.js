@@ -1,30 +1,21 @@
-export class Rectangle {
-	constructor(x, y, w, h) {
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
-	}
-}
-
-export class Element {
-	constructor() {
+export default class Element {
+	constructor(props = {}) {
+		this.props = props;
 		this.index = -1;
 		this.parent = null;
 		this.manager = null;
 		this.children = [];
+		(this.props.children || []).forEach(child => this.addChild(child));
 	}
 
-	get x() { }
-	get y() { }
-	get w() { }
-	get h() { }
+	get x() { throw new Error("Not implemented"); }
+	get y() { throw new Error("Not implemented"); }
+	get width() { throw new Error("Not implemented"); }
+	get height() { throw new Error("Not implemented"); }
 
 	addChild(child) {
-		child.manager = this.manager;
 		child.index = this.children.length;
 		child.parent = this;
-		child.mounted();
 
 		this.children.push(child);
 	}
@@ -32,25 +23,53 @@ export class Element {
 	removeChild(child) {
 		this.children.splice(child.index, 1);
 
-		child.unmounted();
-		child.manager = null;
-		child.index = -1;
 		child.parent = null;
+		child.index = -1;
 	}
 
-	mounted() {
-		for (const child of this.children) child.mounted();
+	handleMountedElement() {
+		this.handleMounted();
+
+		for (const child of this.children) child.handleMountedElement();
 	}
 
-	unmounted() {
-		for (const child of this.children) child.unmounted();
+	handleUnmountedElement() {
+		this.handleUnmounted();
+
+		for (const child of this.children) child.handleUnmountedElement();
 	}
 
-	update(time) {
+	updateElement(time) {
+		this.update();
+
 		for (const child of this.children) child.update(time);
 	}
 
-	async render(screenBuffer, absoluteX, absoluteY) {
-		for (const child of this.children) await child.render(screenBuffer, absoluteX + this.x, absoluteY + this.y);
+	renderElement(screenBuffer, absoluteX, absoluteY) {
+		this.preChildrenRender(screenBuffer, absoluteX, absoluteY);
+
+		for (const child of this.children) child.renderElement(screenBuffer, absoluteX + this.x, absoluteY + this.y);
+
+		this.postChildrenRender(screenBuffer, absoluteX, absoluteY);
+	}
+
+	handleMounted() {
+	}
+
+	handleUnmounted() {
+	}
+
+	update(time) {
+	}
+
+	preChildrenRender(screenBuffer, absoluteX, absoluteY) {
+		this.render(screenBuffer, absoluteX, absoluteY);
+	}
+
+	postChildrenRender(screenBuffer, absoluteX, absoluteY) {
+	}
+
+	// default
+	render(screenBuffer, absoluteX, absoluteY) {
 	}
 }
