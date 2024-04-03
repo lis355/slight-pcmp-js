@@ -55,7 +55,7 @@ export default class CoversCache extends ApplicationComponent {
 	}
 
 	async createScreenBufferFromTrackImageBuffer(track, width, height) {
-		const imageBuffer = track.info.imageBuffer;
+		const imageBuffer = track.info.coverImageBuffer;
 
 		const image = await Jimp.read(imageBuffer);
 		image.resize(width, height * 2);

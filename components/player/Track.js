@@ -9,7 +9,7 @@ export default class Track {
 		this.info = new TrackInfo(this.filePath);
 	}
 
-	async initialize() {
-		await this.info.initialize();
+	async load() {
+		await this.info.load();
 	}
 }

@@ -1,10 +1,10 @@
-// import path from "node:path";
+import path from "node:path";
 
 import fs from "fs-extra";
 // import moment from "moment";
 
 import ApplicationComponent from "../app/ApplicationComponent.js";
-// import Track from "../player/Track.js";
+import Track from "../player/Track.js";
 // import FFPlayer from "../player/FFPlayer.js";
 
 // const OBSOLETE_COVER_CACHE_FILE_PERIOD_IN_MILLISECONDS = moment.duration("P3D");
@@ -48,6 +48,12 @@ export default class MediaLibrary extends ApplicationComponent {
 	}
 
 	async refreshLibrary() {
+		// DEBUG
+
+		this.tracks = [
+			await this.loadTrack(path.posix.join(process.env.CWD, "temp/test.mp3"))
+		];
+
 		// let refreshed = false;
 		// let touchedDirectoriesAmount = 0;
 		// let touchedFilesAmount = 0;
@@ -122,5 +128,17 @@ export default class MediaLibrary extends ApplicationComponent {
 		// if (refreshed) this.application.applicationCache.set("mediaLibrary", this.mediaLibrary);
 
 		// // console.log(`[MediaLibrary]: [refreshLibrary] refreshed: ${refreshed}, touchedDirectoriesAmount: ${touchedDirectoriesAmount}, touchedFilesAmount: ${touchedFilesAmount}, touchedTracksAmount: ${touchedTracksAmount}, changedTracksAmount: ${changedTracksAmount}`);
+	}
+
+	async loadTrack(trackFilePath) {
+		const track = new Track(this, trackFilePath, null);
+		await track.load();
+
+		const width = 20;
+		const height = 8; // Math.floor(CELL_SIZE[0] / CELL_SIZE[1] * w);
+
+		track.coverScreenBuffer = await this.application.coversCache.getCoverScreenBufferForTrack(track, width, height);
+
+		return track;
 	}
 }

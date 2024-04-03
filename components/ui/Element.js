@@ -1,3 +1,5 @@
+import { renderRectangleBorder } from "./tools/renders.js";
+
 export default class Element {
 	constructor(props = {}) {
 		this.props = props;
@@ -82,6 +84,9 @@ export default class Element {
 		if (!this.visible) return;
 
 		this.preChildrenRender(screenBuffer, absoluteX, absoluteY);
+
+		if (this.DEBUG_DRAW_BORDERS &&
+			process.env.DEVELOPER_ENVIRONMENT) renderRectangleBorder(screenBuffer, absoluteX + this.x, absoluteY + this.y, this.width, this.height);
 
 		for (const child of this.children) child.renderElement(screenBuffer, absoluteX + this.x, absoluteY + this.y);
 

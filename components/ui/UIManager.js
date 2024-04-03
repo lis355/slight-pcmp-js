@@ -8,16 +8,18 @@ import RootElement from "./RootElement.js";
 
 const term = terminal.createTerminal({ appId: "xterm-truecolor" });
 
-term.CELL_SIZES = {
-	"vscodeIntegratedMinGWWindows": [7, 17],
-	"externalWindows": [8, 16]
+const CELL_SIZES = {
+	vscodeIntegratedMinGWWindows: [7, 17],
+	externalWindows: [8, 16]
 };
 
-term.CELL_SIZE = term.CELL_SIZES.vscodeIntegratedMinGWWindows;
+const CELL_SIZE = CELL_SIZES.vscodeIntegratedMinGWWindows;
 
 export default class UIManager extends ApplicationComponent {
 	async initialize() {
 		await super.initialize();
+
+		this.cellSizeRation = CELL_SIZE[0] / CELL_SIZE[1];
 
 		this.rootElement = new RootElement();
 		this.rootElement.manager = this;

@@ -3,15 +3,14 @@ import BorderElement from "./BorderElement.js";
 import ContainerElement from "./ContainerElement.js";
 import FrameElement from "./FrameElement.js";
 import TextElement from "./TextElement.js";
+import AlbumsElement from "./AlbumsElement.js";
 
 export default class PlayerElement extends ContainerElement {
 	static create() {
 		let captionElement;
-		// let directorySelectorElement;
-		// let scrollBarElement;
-		// let pathElement;
+		let albumsElement;
 
-		const element = new ContainerElement({
+		const element = new PlayerElement({
 			children: [
 				new BorderElement(),
 				new FrameElement({
@@ -19,12 +18,20 @@ export default class PlayerElement extends ContainerElement {
 					children: [
 						captionElement = new TextElement({ text: getTextInBorder("Albums") })
 					]
+				}),
+				new FrameElement({
+					leftMargin: 1,
+					topMargin: 1,
+					rightMargin: 1,
+					bottomMargin: 1,
+					children: [
+						albumsElement = AlbumsElement.create()
+					]
 				})
-
 			]
 		});
 
-		// directorySelectorElement.scrollBarElement = scrollBarElement;
+		// this.albumsScrollElement = scrollBarElement;
 
 		element.__defineSetter__("caption", value => {
 			captionElement.text = getTextInBorder(value);
@@ -70,8 +77,5 @@ export default class PlayerElement extends ContainerElement {
 		// 		this.selectDirectoryHandler(this.absoluteSelectedPath);
 		// 		break;
 		// }
-	}
-
-	render(screenBuffer, absoluteX, absoluteY) {
 	}
 }
