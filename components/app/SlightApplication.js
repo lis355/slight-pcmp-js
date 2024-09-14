@@ -5,6 +5,7 @@ import { Command } from "commander";
 import Application from "./Application.js";
 import ApplicationCache from "../cache/ApplicationCache.js";
 import ApplicationDataManager from "./ApplicationDataManager.js";
+import ApplicationLocalDBManager from "./db/ApplicationLocalDBManager.js";
 import ApplicationLogic from "./ApplicationLogic.js";
 import ApplicationSettings from "./ApplicationSettings.js";
 import CoversCache from "../cache/CoversCache.js";
@@ -29,6 +30,7 @@ export default class SlightApplication extends Application {
 
 		this.addComponent(this.applicationDataManager = new ApplicationDataManager());
 		this.addComponent(this.applicationSettings = new ApplicationSettings());
+		this.addComponent(this.applicationLocalDBManager = new ApplicationLocalDBManager());
 		this.addComponent(this.applicationCache = new ApplicationCache());
 		this.addComponent(this.applicationLogic = new ApplicationLogic());
 		this.addComponent(this.osManager = new OSManager());
